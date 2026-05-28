@@ -1,0 +1,2 @@
+# polybar
+polybar for dwm
