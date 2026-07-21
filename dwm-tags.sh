@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Color configuration
-COLOR_ACTIVE="${DWM_TAG_ACTIVE_COLOR:-#eceff4}"
-COLOR_OCCUPIED="${DWM_TAG_OCCUPIED_COLOR:-#d8dee9}"
-COLOR_URGENT="${DWM_TAG_URGENT_COLOR:-#bf616a}"
+COLOR_ACTIVE="${DWM_TAG_ACTIVE_COLOR:-#ECEFF4}"
+COLOR_OCCUPIED="${DWM_TAG_OCCUPIED_COLOR:-#abafb6ff}"
+COLOR_URGENT="${DWM_TAG_URGENT_COLOR:-#BF616A}"
 COLOR_EMPTY="${DWM_TAG_EMPTY_COLOR:-#4c566a}"
 FONT_ACTIVE="${DWM_TAG_ACTIVE_FONT:-2}"
-FONT_OCCUPIED="${DWM_TAG_OCCUPIED_FONT:-4}"
-FONT_URGENT="${DWM_TAG_URGENT_FONT:-4}"
-FONT_EMPTY="${DWM_TAG_EMPTY_FONT:-4}"
+FONT_OCCUPIED="${DWM_TAG_OCCUPIED_FONT:-1}"
+FONT_URGENT="${DWM_TAG_URGENT_FONT:-3}"
+FONT_EMPTY="${DWM_TAG_EMPTY_FONT:-0}"
 
 # Switch DWM tag by simulating the keybind (Super+1 through Super+9)
 # DWM's default tag keybinds are Mod+1-9
@@ -19,7 +19,7 @@ switch_tag() {
 
 update_tags() {
     declare -A occupied_tags
-    declare -A urgent_tags
+    declare -A active_tags
 
     client_list=$(xprop -root _NET_CLIENT_LIST 2>/dev/null | cut -d'#' -f2)
 
@@ -32,7 +32,7 @@ update_tags() {
                 occupied_tags[$desktop]=1
                 hints=$(xprop -id "$win_id" WM_HINTS 2>/dev/null)
                 if echo "$hints" | grep -q "urgency hint"; then
-                    urgent_tags[$desktop]=1
+                    active_tags[$desktop]=1
                 fi
             fi
         done < <(tr ',' '\n' <<< "$client_list")
@@ -51,7 +51,7 @@ update_tags() {
 
         if [ "$i" = "$current" ]; then
             output+="${click_action}%{F${COLOR_ACTIVE}}%{T${FONT_ACTIVE}} $tag %{T-}%{F-}${click_end}"
-        elif [ "${urgent_tags[$i]}" = "1" ]; then
+        elif [ "${active_tags[$i]}" = "1" ]; then
             output+="${click_action}%{F${COLOR_URGENT}}%{T${FONT_URGENT}} $tag %{T-}%{F-}${click_end}"
         elif [ "${occupied_tags[$i]}" = "1" ]; then
             output+="${click_action}%{F${COLOR_OCCUPIED}}%{T${FONT_OCCUPIED}} $tag %{T-}%{F-}${click_end}"
